@@ -18,6 +18,7 @@ if (!process.env.ENCRYPTION_KEY) {
 
 const app = require('./app');
 const db = require('./db');
+const { decrypt } = require('./crypto');
 
 const BASE = 'http://localhost:3999';
 let server;
@@ -203,10 +204,12 @@ async function main() {
       .get(sessionId);
     assert.ok(row);
     assert.notStrictEqual(row.value, '137');
-    assert.ok(!row.value.includes('137'));
-    // raw db file bytes must not contain the plaintext heart rate value either
-    const raw = fs.readFileSync(TEST_DB);
-    assert.ok(!raw.includes('137'), 'plaintext heart rate value found in raw db file');
+    // Stored value must be in the iv:authTag:ciphertext hex format, not bare
+    // plaintext (a raw substring search for "137" would be flaky here: it's
+    // a valid hex digit sequence with a real chance of appearing by chance
+    // inside ~130 random hex characters).
+    assert.match(row.value, /^[0-9a-f]+:[0-9a-f]+:[0-9a-f]+$/i);
+    assert.strictEqual(decrypt(row.value), '137');
   });
 
   await test('camera reps recorded and live GET returns cameraRepCount/deviceRepCount/latestHeartRate', async () => {
