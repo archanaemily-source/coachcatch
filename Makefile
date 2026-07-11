@@ -30,8 +30,8 @@ seed:
 
 test:
 	cd backend && npm test
-	cd frontend && npm test
+	@if [ -f frontend/package.json ]; then cd frontend && npm test; else echo "(frontend not scaffolded yet, skipping frontend tests)"; fi
 
 build:
-	cd frontend && npm run build
+	@if [ -f frontend/package.json ]; then cd frontend && npm run build; else echo "(frontend not scaffolded yet, skipping frontend build)"; fi
 	cd backend && node -c server.js
