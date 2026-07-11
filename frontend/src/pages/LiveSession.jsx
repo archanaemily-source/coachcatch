@@ -11,6 +11,7 @@ import {
   STARTUP_CONFIDENT_MS,
 } from '../repEngine';
 import DepthGauge from '../components/DepthGauge';
+import SessionSummary from '../components/SessionSummary';
 
 const MEDIAPIPE_VERSION = '0.10.35';
 const WASM_BASE_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MEDIAPIPE_VERSION}/wasm`;
@@ -34,6 +35,7 @@ export default function LiveSession() {
   const rafRef = useRef(null);
   const landmarkerRef = useRef(null);
   const streamRef = useRef(null);
+  const stopCameraRef = useRef(() => {});
 
   const [deviceToken, setDeviceToken] = useState(null);
   const [loadError, setLoadError] = useState('');
@@ -46,7 +48,11 @@ export default function LiveSession() {
   const [repPop, setRepPop] = useState(false);
   const [latestHeartRate, setLatestHeartRate] = useState(null);
   const [deviceRepCount, setDeviceRepCount] = useState(null);
-  const [sessionStatus, setSessionStatus] = useState('in_progress');
+  const [summarySession, setSummarySession] = useState(null);
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manualCount, setManualCount] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   // Load the session (for deviceToken) and poll for HR / device rep cross-check.
   useEffect(() => {
@@ -61,8 +67,14 @@ export default function LiveSession() {
           setDeviceToken(data.deviceToken ?? null);
           setLatestHeartRate(data.latestHeartRate);
           setDeviceRepCount(data.deviceRepCount);
-          setSessionStatus(data.status);
-          if (data.status === 'in_progress') timer = setTimeout(poll, POLL_MS);
+          if (data.status === 'in_progress') {
+            timer = setTimeout(poll, POLL_MS);
+          } else {
+            // Session was completed (e.g. by an end-workout action, or on reload
+            // after finishing) — show the summary instead of the live view.
+            stopCameraRef.current();
+            setSummarySession((prev) => prev ?? data);
+          }
         })
         .catch(() => {
           if (!cancelled) timer = setTimeout(poll, POLL_MS);
@@ -195,16 +207,64 @@ export default function LiveSession() {
       }
     }
 
-    setup();
-
-    return () => {
+    function stopCamera() {
       cancelled = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (landmarkerRef.current) landmarkerRef.current.close();
-      if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
-    };
+      if (landmarkerRef.current) {
+        landmarkerRef.current.close();
+        landmarkerRef.current = null;
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+      }
+    }
+    stopCameraRef.current = stopCamera;
+
+    setup();
+
+    return stopCamera;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, token]);
+
+  async function handleEndWorkout() {
+    setBusy(true);
+    setActionError('');
+    stopCameraRef.current();
+    try {
+      await api.completeSession(sessionId, token);
+      const full = await api.getSession(sessionId, token);
+      setSummarySession(full);
+    } catch (err) {
+      setActionError(err.message);
+      setBusy(false);
+    }
+  }
+
+  async function handleManualSubmit(e) {
+    e.preventDefault();
+    const count = Number(manualCount);
+    if (!Number.isFinite(count) || count <= 0) return;
+    setBusy(true);
+    setActionError('');
+    stopCameraRef.current();
+    try {
+      for (let i = 1; i <= count; i++) {
+        // eslint-disable-next-line no-await-in-loop
+        await api.postRep(sessionId, { source: 'manual', repNumber: i, timestamp: new Date().toISOString() }, token);
+      }
+      await api.completeSession(sessionId, token);
+      const full = await api.getSession(sessionId, token);
+      setSummarySession(full);
+    } catch (err) {
+      setActionError(err.message);
+      setBusy(false);
+    }
+  }
+
+  if (summarySession) {
+    return <SessionSummary session={summarySession} onDone={() => navigate('/student')} />;
+  }
 
   const showStatusBanner = statusMessage && !loadError;
 
@@ -249,7 +309,7 @@ export default function LiveSession() {
         reps{shallowReps > 0 ? ` · ${shallowReps} shallow` : ''}
       </div>
 
-      <div className="flex items-center gap-6 text-sm">
+      <div className="flex items-center gap-6 text-sm mb-6">
         <div className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-heart inline-block" />
           <span className="text-heart font-semibold">{latestHeartRate ?? '—'} bpm</span>
@@ -259,9 +319,48 @@ export default function LiveSession() {
         </div>
       </div>
 
-      {sessionStatus === 'completed' && (
-        <p className="text-muted text-sm mt-6">This session has been completed.</p>
-      )}
+      {actionError && <p className="text-error text-sm mb-3">{actionError}</p>}
+
+      <div className="w-full space-y-3">
+        <button
+          onClick={handleEndWorkout}
+          disabled={busy}
+          className="w-full bg-rep text-bg font-bold text-lg py-3.5 rounded-xl disabled:opacity-50"
+        >
+          {busy ? 'Ending…' : 'End workout'}
+        </button>
+
+        {!manualOpen && (
+          <button
+            onClick={() => setManualOpen(true)}
+            disabled={busy}
+            className="w-full text-muted text-sm underline py-1"
+          >
+            Manual entry
+          </button>
+        )}
+
+        {manualOpen && (
+          <form onSubmit={handleManualSubmit} className="flex gap-2">
+            <input
+              type="number"
+              min="1"
+              placeholder="Reps completed"
+              value={manualCount}
+              onChange={(e) => setManualCount(e.target.value)}
+              required
+              className="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-text placeholder:text-muted focus:outline-none focus:border-rep"
+            />
+            <button
+              type="submit"
+              disabled={busy}
+              className="bg-panel border border-border text-text font-semibold px-4 py-2 rounded-lg disabled:opacity-50"
+            >
+              {busy ? '…' : 'Log & finish'}
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 }

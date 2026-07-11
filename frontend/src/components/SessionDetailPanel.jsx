@@ -26,6 +26,10 @@ export default function SessionDetailPanel({ session }) {
         return scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null;
       })();
   const heartReadings = (session.biometrics || []).filter((b) => b.type === 'heart_rate');
+  // totalReps falls back to the manual count when there are zero camera events —
+  // label it honestly rather than always claiming "camera".
+  const hasCameraEvents = (session.repEvents || []).some((e) => e.source === 'camera');
+  const repsLabel = hasCameraEvents || !session.summary ? 'Camera reps' : 'Manual reps';
 
   return (
     <div className="bg-panel border border-border rounded-xl p-5">
@@ -44,7 +48,7 @@ export default function SessionDetailPanel({ session }) {
 
       <div className="flex items-end gap-6 mb-4">
         <div>
-          <div className="text-xs text-muted uppercase tracking-wide mb-1">Camera reps</div>
+          <div className="text-xs text-muted uppercase tracking-wide mb-1">{repsLabel}</div>
           <div className="font-display text-6xl font-bold text-rep leading-none">{cameraCount ?? 0}</div>
         </div>
         <div className="pb-2">

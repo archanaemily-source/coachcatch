@@ -159,7 +159,7 @@ export default function CoachDashboard() {
                     {s.status === 'in_progress' ? (
                       <span className="text-error text-xs font-semibold uppercase">Live</span>
                     ) : (
-                      <span className="text-muted text-xs">{s.cameraRepCount} reps</span>
+                      <span className="text-muted text-xs">{s.summary?.totalReps ?? s.cameraRepCount} reps</span>
                     )}
                   </button>
                 ))}

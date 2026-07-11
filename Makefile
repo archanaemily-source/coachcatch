@@ -2,7 +2,7 @@ SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
 export PATH := $(ROOT_DIR)/.tools/node/bin:$(PATH)
 
-.PHONY: help dev seed test build install
+.PHONY: help dev seed test build install e2e
 
 help:
 	@echo "CoachApp make targets:"
@@ -11,6 +11,7 @@ help:
 	@echo "  make seed     - wipe the DB and load demo coach/students/sessions"
 	@echo "  make test     - run backend endpoint tests + rep-engine unit tests"
 	@echo "  make build    - production build of the frontend, sanity-check backend"
+	@echo "  make e2e      - re-seed, then run the curl end-to-end workout script"
 
 install:
 	cd backend && npm install
@@ -35,3 +36,12 @@ test:
 build:
 	@if [ -f frontend/package.json ]; then cd frontend && npm run build; else echo "(frontend not scaffolded yet, skipping frontend build)"; fi
 	cd backend && node -c server.js
+
+e2e: seed
+	@cd backend && (BACKEND_PORT=3001 node server.js > /tmp/coachapp-e2e-backend.log 2>&1 & echo $$! > /tmp/coachapp-e2e-backend.pid)
+	@sleep 1
+	@BASE_URL=http://localhost:3001 bash backend/e2e.sh; \
+	STATUS=$$?; \
+	kill $$(cat /tmp/coachapp-e2e-backend.pid) 2>/dev/null; \
+	rm -f /tmp/coachapp-e2e-backend.pid; \
+	exit $$STATUS

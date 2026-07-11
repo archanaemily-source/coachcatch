@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import SessionDetailPanel from '../components/SessionDetailPanel';
 
 export default function StudentHome() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
   const [goals, setGoals] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [selectedSessionId, setSelectedSessionId] = useState(null);
+  const [selectedSession, setSelectedSession] = useState(null);
   const [error, setError] = useState('');
   const [starting, setStarting] = useState(false);
 
@@ -14,6 +18,10 @@ export default function StudentHome() {
     api
       .getStudentGoals(user.id, token)
       .then((data) => setGoals(data.goals.filter((g) => g.active)))
+      .catch((err) => setError(err.message));
+    api
+      .getStudentSessions(user.id, token)
+      .then((data) => setSessions(data.sessions))
       .catch((err) => setError(err.message));
   }, [user.id, token]);
 
@@ -28,6 +36,19 @@ export default function StudentHome() {
       setError(err.message);
       setStarting(false);
     }
+  };
+
+  const handleSelectSession = (id) => {
+    if (selectedSessionId === id) {
+      setSelectedSessionId(null);
+      setSelectedSession(null);
+      return;
+    }
+    setSelectedSessionId(id);
+    api
+      .getSession(id, token)
+      .then((data) => setSelectedSession(data))
+      .catch((err) => setError(err.message));
   };
 
   return (
@@ -60,10 +81,39 @@ export default function StudentHome() {
       <button
         onClick={handleStart}
         disabled={starting}
-        className="w-full bg-rep text-bg font-bold text-lg py-4 rounded-xl disabled:opacity-50"
+        className="w-full bg-rep text-bg font-bold text-lg py-4 rounded-xl disabled:opacity-50 mb-8"
       >
         {starting ? 'Starting…' : 'Start session'}
       </button>
+
+      <div>
+        <h2 className="text-sm text-muted uppercase tracking-wide mb-2">Session history</h2>
+        {sessions.length === 0 && <p className="text-muted text-sm">No sessions yet.</p>}
+        <div className="space-y-2">
+          {sessions.map((s) => (
+            <div key={s.id}>
+              <button
+                onClick={() => handleSelectSession(s.id)}
+                className={`w-full text-left px-3 py-2 rounded-lg border flex items-center justify-between ${
+                  selectedSessionId === s.id ? 'border-rep bg-panel' : 'border-border bg-panel/50'
+                }`}
+              >
+                <span className="text-text text-sm">{new Date(s.startedAt).toLocaleString()}</span>
+                {s.status === 'in_progress' ? (
+                  <span className="text-error text-xs font-semibold uppercase">Live</span>
+                ) : (
+                  <span className="text-muted text-xs">{s.summary?.totalReps ?? s.cameraRepCount} reps</span>
+                )}
+              </button>
+              {selectedSessionId === s.id && selectedSession && (
+                <div className="mt-2">
+                  <SessionDetailPanel session={selectedSession} />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
