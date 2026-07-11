@@ -3,7 +3,7 @@ import { useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import CoachDashboard from './pages/CoachDashboard';
 import StudentHome from './pages/StudentHome';
-import LiveSessionPlaceholder from './pages/LiveSessionPlaceholder';
+import LiveSession from './pages/LiveSession';
 
 function RequireRole({ role, children }) {
   const { user } = useAuth();
@@ -41,7 +41,7 @@ export default function App() {
         path="/session/:id"
         element={
           <RequireRole role="student">
-            <LiveSessionPlaceholder />
+            <LiveSession />
           </RequireRole>
         }
       />
