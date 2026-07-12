@@ -46,14 +46,16 @@ void postRep(int repNumber) {
   http.end();
 }
 
-void postBreathRate(int breathsPerMin) {
+// score: breath-force/intensity reading, not a literal rate.
+// 0-10 resting, 10-20 moderate, 20-40 heavy, 40+ labored.
+void postBreathRate(int score) {
   HTTPClient http;
   http.begin(String(SERVER_HOST) + "/api/devices/biometrics");
   http.addHeader("Content-Type", "application/json");
   http.addHeader("X-Device-Token", DEVICE_TOKEN);
-  String body = "{\"type\":\"breath_rate\",\"value\":\"" + String(breathsPerMin) + "\"}";
+  String body = "{\"type\":\"breath_rate\",\"value\":\"" + String(score) + "\"}";
   int status = http.POST(body);
-  Serial.printf("BR %d -> %d\n", breathsPerMin, status);
+  Serial.printf("BR %d -> %d\n", score, status);
   http.end();
 }
 
@@ -63,9 +65,10 @@ void loop() {
   //   repCount++;
   //   postRep(repCount);
 
-  // TODO: replace with your real breath-analyzer sensor read. Report
-  // every few seconds, not on every loop iteration:
-  //   postBreathRate(currentBreathsPerMin);
+  // TODO: replace with your real breath-analyzer sensor read (breath-force
+  // score, not a rate). Report every few seconds, not on every loop
+  // iteration:
+  //   postBreathRate(currentBreathScore);
 
   delay(1000);
 }

@@ -12,6 +12,7 @@ import {
 } from '../repEngine';
 import DepthGauge from '../components/DepthGauge';
 import SessionSummary from '../components/SessionSummary';
+import { breathIntensityLabel } from '../breathScale';
 
 const MEDIAPIPE_VERSION = '0.10.35';
 const WASM_BASE_URL = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MEDIAPIPE_VERSION}/wasm`;
@@ -312,7 +313,9 @@ export default function LiveSession() {
       <div className="flex items-center gap-6 text-sm mb-6">
         <div className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-breath inline-block" />
-          <span className="text-breath font-semibold">{latestBreathRate ?? '—'} breaths/min</span>
+          <span className="text-breath font-semibold">
+            {latestBreathRate !== null ? breathIntensityLabel(latestBreathRate) : '—'}
+          </span>
         </div>
         <div className="text-muted">
           Device: <span className="text-text font-semibold">{deviceRepCount ?? '—'}</span>

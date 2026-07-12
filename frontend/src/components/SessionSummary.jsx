@@ -1,3 +1,5 @@
+import { breathIntensityLabel } from '../breathScale';
+
 function formatDate(iso) {
   if (!iso) return '';
   return new Date(iso).toLocaleString(undefined, {
@@ -9,8 +11,8 @@ function formatDate(iso) {
 }
 
 // Post-workout summary screen: camera reps are the headline, device count
-// and breath rate are supporting detail. Shown right after "End workout" /
-// manual entry, and when revisiting an already-completed session.
+// and breath intensity are supporting detail. Shown right after "End
+// workout" / manual entry, and when revisiting an already-completed session.
 export default function SessionSummary({ session, onDone }) {
   const summary = session.summary || {};
   const breathReadings = (session.biometrics || []).filter((b) => b.type === 'breath_rate');
@@ -47,19 +49,26 @@ export default function SessionSummary({ session, onDone }) {
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted text-sm">Avg breath rate</span>
-          <span className="text-breath font-semibold">{avgBr ?? '—'} breaths/min</span>
+          <span className="text-muted text-sm">Avg breath intensity</span>
+          <span className="text-breath font-semibold">
+            {avgBr ?? '—'}
+            {avgBr !== null ? ` · ${breathIntensityLabel(avgBr)}` : ''}
+          </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted text-sm">Peak breath rate</span>
-          <span className="text-breath font-semibold">{peakBr ?? '—'} breaths/min</span>
+          <span className="text-muted text-sm">Peak breath intensity</span>
+          <span className="text-breath font-semibold">
+            {peakBr ?? '—'}
+            {peakBr !== null ? ` · ${breathIntensityLabel(peakBr)}` : ''}
+          </span>
         </div>
       </div>
 
       {breathReadings.length > 0 && (
         <p className="text-sm text-muted mb-6 leading-relaxed">
-          Effort: breath rate climbed to <span className="text-breath font-semibold">{peakBr} breaths/min</span>{' '}
-          during this session — a strong effort signal alongside the rep count.
+          Effort: breathing reached{' '}
+          <span className="text-breath font-semibold">{breathIntensityLabel(peakBr)}</span> during this session — a
+          strong effort signal alongside the rep count.
         </p>
       )}
 

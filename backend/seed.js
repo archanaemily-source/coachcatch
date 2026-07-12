@@ -93,27 +93,30 @@ function main() {
   const jordanGoal = createGoal(jordanId, coachId, 20);
   const samGoal = createGoal(samId, coachId, 15);
 
-  // 3 completed sessions total: Jordan has a two-session history, Sam has one.
+  // breathStart/breathEnd are breath-force scores (0-10 resting, 10-20
+  // moderate, 20-40 heavy, 40+ labored — not a literal rate), per the
+  // hardware teammate's sensor calibration. 3 completed sessions total:
+  // Jordan has a two-session history, Sam has one.
   createCompletedSession(jordanId, jordanGoal, {
     startMinutesAgo: 60 * 24 * 3,
     cameraReps: 18,
     deviceReps: 17,
-    breathStart: 15,
-    breathEnd: 29,
+    breathStart: 8, // resting
+    breathEnd: 24, // heavy breathing
   });
   createCompletedSession(jordanId, jordanGoal, {
     startMinutesAgo: 60 * 24 * 1,
     cameraReps: 22,
     deviceReps: 20,
-    breathStart: 16,
-    breathEnd: 32,
+    breathStart: 9, // resting
+    breathEnd: 44, // labored breathing — hardest session
   });
   createCompletedSession(samId, samGoal, {
     startMinutesAgo: 60 * 24 * 2,
     cameraReps: 13,
     deviceReps: 15,
-    breathStart: 14,
-    breathEnd: 26,
+    breathStart: 7, // resting
+    breathEnd: 18, // moderate breathing — lighter session
   });
 
   console.log('Seed complete.');

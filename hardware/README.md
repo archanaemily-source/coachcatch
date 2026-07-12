@@ -60,9 +60,17 @@ curl -X POST http://localhost:3001/api/devices/biometrics \
   -d '{"type": "breath_rate", "value": "18"}'
 ```
 
-`value` is breaths per minute (resting is roughly 12-16; expect it to climb
-into the 25-35 range during a squat set). Send a reading every few
-seconds — no need to stream continuously.
+`value` is a breath-force/intensity score, not a literal rate — the app
+buckets it into four zones:
+
+| Score  | Zone               |
+|--------|--------------------|
+| 0-10   | Resting            |
+| 10-20  | Moderate breathing |
+| 20-40  | Heavy breathing    |
+| 40+    | Labored breathing  |
+
+Send a reading every few seconds — no need to stream continuously.
 
 ## Responses
 

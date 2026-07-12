@@ -2,9 +2,11 @@
 """Serial-to-HTTP bridge for CoachCatch's device endpoints.
 
 Reads lines from a serial port (or stdin in --dry-run mode) and forwards
-them to the backend: a "REP" line counts one rep, a "BR:<breaths/min>"
-line reports a breath-rate reading. This is the no-WiFi fallback for the
-ESP32 sketch — plug the sensor into a laptop over USB instead.
+them to the backend: a "REP" line counts one rep, a "BR:<score>" line
+reports a breath-force/intensity reading (0-10 resting, 10-20 moderate,
+20-40 heavy, 40+ labored — not a literal breaths-per-minute rate). This
+is the no-WiFi fallback for the ESP32 sketch — plug the sensor into a
+laptop over USB instead.
 
 Usage:
     pip install pyserial

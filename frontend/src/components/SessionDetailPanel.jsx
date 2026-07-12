@@ -1,5 +1,6 @@
 import CrossCheckBadge from './CrossCheckBadge';
 import BreathRateChart from './BreathRateChart';
+import { breathIntensityLabel } from '../breathScale';
 
 function formatDate(iso) {
   if (!iso) return '';
@@ -70,9 +71,11 @@ export default function SessionDetailPanel({ session }) {
       <div>
         <div className="text-xs text-muted uppercase tracking-wide mb-2 flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-breath inline-block" />
-          Breath rate
+          Breath intensity
           {session.latestBreathRate ? (
-            <span className="text-breath font-semibold normal-case">{session.latestBreathRate} breaths/min latest</span>
+            <span className="text-breath font-semibold normal-case">
+              {session.latestBreathRate} · {breathIntensityLabel(session.latestBreathRate)}
+            </span>
           ) : null}
         </div>
         <BreathRateChart readings={breathReadings} />
