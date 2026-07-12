@@ -38,7 +38,7 @@ build:
 	cd backend && node -c server.js
 
 e2e: seed
-	@cd backend && (BACKEND_PORT=3001 node server.js > /tmp/coachapp-e2e-backend.log 2>&1 & echo $$! > /tmp/coachapp-e2e-backend.pid)
+	@cd backend && (DISABLE_FIREBASE_POLL=1 BACKEND_PORT=3001 node server.js > /tmp/coachapp-e2e-backend.log 2>&1 & echo $$! > /tmp/coachapp-e2e-backend.pid)
 	@sleep 1
 	@BASE_URL=http://localhost:3001 bash backend/e2e.sh; \
 	STATUS=$$?; \
