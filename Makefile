@@ -17,6 +17,15 @@ help:
 install:
 	cd backend && npm install
 	cd frontend && npm install
+	@if [ ! -f backend/.env ]; then \
+		echo "Generating backend/.env with fresh secrets..."; \
+		JWT_SECRET=$$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"); \
+		ENCRYPTION_KEY=$$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"); \
+		printf 'BACKEND_PORT=3001\nJWT_SECRET=%s\nENCRYPTION_KEY=%s\nDB_PATH=./data.db\n' "$$JWT_SECRET" "$$ENCRYPTION_KEY" > backend/.env; \
+		echo "backend/.env created. Add FIREBASE_BREATH_URL yourself if you have that feed."; \
+	else \
+		echo "backend/.env already exists, leaving it alone."; \
+	fi
 
 dev:
 	@echo "Starting backend and frontend..."

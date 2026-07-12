@@ -12,10 +12,29 @@ hardware agreeing proves the system.
 See [CLAUDE.md](CLAUDE.md) for the full data model, API contract, and
 access-control rules.
 
+## Getting started
+
+Requires Node.js 18+ (nothing else — no Docker, no external DB to install;
+SQLite is embedded).
+
+```bash
+git clone https://github.com/archanaemily-source/coachcatch.git
+cd coachcatch
+make install   # installs deps AND generates backend/.env with fresh random secrets
+make seed      # loads demo coach/students/sessions
+make dev       # backend on :3001, frontend on :5173
+```
+
+Then open `http://localhost:5173`. `backend/.env` is gitignored on purpose
+(it holds `JWT_SECRET`/`ENCRYPTION_KEY`) — `make install` generates a fresh
+one automatically if it doesn't exist, and leaves it alone if it does. The
+breath-analyzer Firebase feed is optional and teammate-specific; without
+`FIREBASE_BREATH_URL` set in `backend/.env`, that polling just no-ops.
+
 ## Make targets
 
 ```
-make install  - install backend + frontend dependencies
+make install  - install backend + frontend dependencies, generate backend/.env
 make dev      - run backend (3001) and frontend (5173) together
 make seed     - wipe the DB and load demo coach/students/sessions
 make test     - run backend endpoint tests + rep-engine unit tests
@@ -23,8 +42,6 @@ make build    - production build of the frontend, sanity-check backend
 make e2e      - re-seed, then run the curl end-to-end workout script
 make help     - list all targets
 ```
-
-First run: `make install && make seed && make dev`.
 
 ## Demo logins
 
