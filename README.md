@@ -2,11 +2,11 @@
 
 A student does squats in front of their phone camera; MediaPipe pose
 detection counts reps and scores form right in the browser. A teammate's
-hardware sensor independently reports its own rep count and heart rate to
+hardware sensor independently reports its own rep count and breath rate to
 the backend as a cross-check. The coach sees live sessions and post-workout
 reports.
 
-**Pitch:** reps prove the motion, heart rate proves the effort, and camera +
+**Pitch:** reps prove the motion, breath proves the effort, and camera +
 hardware agreeing proves the system.
 
 See [CLAUDE.md](CLAUDE.md) for the full data model, API contract, and
@@ -46,7 +46,7 @@ All passwords are `password123`.
    so your full body is in frame and do a few squats.
 4. On the coach side, select **Jordan Reyes**, then click the session
    marked **LIVE** — it polls every 4 seconds and updates the rep count,
-   cross-check badge, and heart-rate chart in real time.
+   cross-check badge, and breath-rate chart in real time.
 5. Tap **End workout** on the student side to see the summary screen; the
    coach's panel updates on its next poll.
 
@@ -69,7 +69,7 @@ you don't need to tunnel the backend separately.
 ## 90-second demo script
 
 1. **(10s)** "CoachApp cross-checks a phone camera against hardware —
-   reps prove the motion, heart rate proves the effort."
+   reps prove the motion, breath proves the effort."
 2. **(20s)** Student taps Start session, sensor code appears — "that code
    is what the hardware teammate's sensor pairs with, no login needed."
    Do 3-4 visible squats; watch the giant rep counter and depth gauge live.
@@ -77,7 +77,7 @@ you don't need to tunnel the backend separately.
    banner flashes and it's *not* counted as a full rep.
 4. **(15s)** Switch to the coach's screen — the session is tagged LIVE,
    updating every 4s, camera reps headline in orange, device count next to
-   it with the cross-check badge, heart-rate line climbing in teal.
+   it with the cross-check badge, breath-rate line climbing in teal.
 5. **(15s)** Tap End workout — summary screen with camera reps, device
    count, avg form score, and the effort note.
 6. **(15s)** "If the camera can't see you or the hardware isn't paired
@@ -90,7 +90,7 @@ you don't need to tunnel the backend separately.
 - The pose model assumes a roughly side-on camera angle so the knee/hip/
   ankle landmarks are all visible — a straight-on front view will trigger
   the "step back" cue more often.
-- The heart-rate "effort" note is a coaching signal for the demo, not a
+- The breath-rate "effort" note is a coaching signal for the demo, not a
   medical claim or a validated fitness metric.
 - The device rep count is a cross-check only; it's never reconciled with
   or averaged into the camera's count, even when they disagree.

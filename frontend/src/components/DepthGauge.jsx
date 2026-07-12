@@ -20,7 +20,7 @@ export default function DepthGauge({ angle, phase }) {
       <div className="relative h-full w-2.5 bg-panel border border-border rounded-full overflow-hidden">
         <div
           className={`absolute bottom-0 left-0 w-full transition-[height] duration-100 ${
-            phase === 'down' ? 'bg-rep' : 'bg-heart'
+            phase === 'down' ? 'bg-rep' : 'bg-breath'
           }`}
           style={{ height: `${fillPct}%` }}
         />

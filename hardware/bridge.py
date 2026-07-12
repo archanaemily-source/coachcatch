@@ -2,8 +2,8 @@
 """Serial-to-HTTP bridge for CoachApp's device endpoints.
 
 Reads lines from a serial port (or stdin in --dry-run mode) and forwards
-them to the backend: a "REP" line counts one rep, an "HR:<bpm>" line
-reports a heart-rate reading. This is the no-WiFi fallback for the
+them to the backend: a "REP" line counts one rep, a "BR:<breaths/min>"
+line reports a breath-rate reading. This is the no-WiFi fallback for the
 ESP32 sketch — plug the sensor into a laptop over USB instead.
 
 Usage:
@@ -11,7 +11,7 @@ Usage:
     python3 bridge.py --port /dev/tty.usbserial-XXXX --token <sensor-code>
 
 Dry run (no hardware; reads lines from stdin instead of a serial port):
-    printf 'REP\\nHR:132\\nREP\\n' | python3 bridge.py --dry-run --token <sensor-code>
+    printf 'REP\\nBR:18\\nREP\\n' | python3 bridge.py --dry-run --token <sensor-code>
 """
 import argparse
 import json
@@ -58,10 +58,10 @@ def main():
             rep_number += 1
             status = post(args.base_url, "/api/devices/reps", args.token, {"repNumber": rep_number})
             print(f"REP {rep_number} -> {status}")
-        elif line.startswith("HR:"):
+        elif line.startswith("BR:"):
             value = line.split(":", 1)[1].strip()
-            status = post(args.base_url, "/api/devices/biometrics", args.token, {"type": "heart_rate", "value": value})
-            print(f"HR {value} -> {status}")
+            status = post(args.base_url, "/api/devices/biometrics", args.token, {"type": "breath_rate", "value": value})
+            print(f"BR {value} -> {status}")
         elif line:
             print(f"ignoring unrecognized line: {line!r}")
 

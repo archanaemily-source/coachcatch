@@ -85,8 +85,8 @@ router.get('/:id', authMiddleware, (req, res) => {
   const events = getRepEvents(id);
   const biometrics = getBiometrics(id);
   const { cameraRepCount, deviceRepCount } = repCounts(events);
-  const heartRates = biometrics.filter((b) => b.type === 'heart_rate');
-  const latestHeartRate = heartRates.length ? heartRates[heartRates.length - 1].value : null;
+  const breathRates = biometrics.filter((b) => b.type === 'breath_rate');
+  const latestBreathRate = breathRates.length ? breathRates[breathRates.length - 1].value : null;
 
   const isCoach = req.user.role === 'coach';
   const { deviceToken, ...rest } = session;
@@ -98,7 +98,7 @@ router.get('/:id', authMiddleware, (req, res) => {
     biometrics,
     cameraRepCount,
     deviceRepCount,
-    latestHeartRate,
+    latestBreathRate,
     summary: session.status === 'completed' ? computeSummary(session, events) : null,
   });
 });

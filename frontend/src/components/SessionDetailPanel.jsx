@@ -1,5 +1,5 @@
 import CrossCheckBadge from './CrossCheckBadge';
-import HeartRateChart from './HeartRateChart';
+import BreathRateChart from './BreathRateChart';
 
 function formatDate(iso) {
   if (!iso) return '';
@@ -25,7 +25,7 @@ export default function SessionDetailPanel({ session }) {
           .map((e) => e.formScore);
         return scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null;
       })();
-  const heartReadings = (session.biometrics || []).filter((b) => b.type === 'heart_rate');
+  const breathReadings = (session.biometrics || []).filter((b) => b.type === 'breath_rate');
   // totalReps falls back to the manual count when there are zero camera events —
   // label it honestly rather than always claiming "camera".
   const hasCameraEvents = (session.repEvents || []).some((e) => e.source === 'camera');
@@ -69,13 +69,13 @@ export default function SessionDetailPanel({ session }) {
 
       <div>
         <div className="text-xs text-muted uppercase tracking-wide mb-2 flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-heart inline-block" />
-          Heart rate
-          {session.latestHeartRate ? (
-            <span className="text-heart font-semibold normal-case">{session.latestHeartRate} bpm latest</span>
+          <span className="h-2 w-2 rounded-full bg-breath inline-block" />
+          Breath rate
+          {session.latestBreathRate ? (
+            <span className="text-breath font-semibold normal-case">{session.latestBreathRate} breaths/min latest</span>
           ) : null}
         </div>
-        <HeartRateChart readings={heartReadings} />
+        <BreathRateChart readings={breathReadings} />
       </div>
     </div>
   );

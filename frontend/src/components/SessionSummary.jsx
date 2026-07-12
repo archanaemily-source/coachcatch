@@ -9,15 +9,15 @@ function formatDate(iso) {
 }
 
 // Post-workout summary screen: camera reps are the headline, device count
-// and heart rate are supporting detail. Shown right after "End workout" /
+// and breath rate are supporting detail. Shown right after "End workout" /
 // manual entry, and when revisiting an already-completed session.
 export default function SessionSummary({ session, onDone }) {
   const summary = session.summary || {};
-  const heartReadings = (session.biometrics || []).filter((b) => b.type === 'heart_rate');
-  const avgHr = heartReadings.length
-    ? Math.round(heartReadings.reduce((a, b) => a + b.value, 0) / heartReadings.length)
+  const breathReadings = (session.biometrics || []).filter((b) => b.type === 'breath_rate');
+  const avgBr = breathReadings.length
+    ? Math.round(breathReadings.reduce((a, b) => a + b.value, 0) / breathReadings.length)
     : null;
-  const peakHr = heartReadings.length ? Math.max(...heartReadings.map((b) => b.value)) : null;
+  const peakBr = breathReadings.length ? Math.max(...breathReadings.map((b) => b.value)) : null;
   // totalReps falls back to the manual count when there are zero camera events —
   // label it honestly rather than always claiming "camera".
   const hasCameraEvents = (session.repEvents || []).some((e) => e.source === 'camera');
@@ -36,7 +36,7 @@ export default function SessionSummary({ session, onDone }) {
       <div className="w-full bg-panel border border-border rounded-xl p-5 mb-6 text-left space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-muted text-sm">Device confirmed</span>
-          <span className="text-heart font-semibold">{summary.deviceRepCount ?? '—'}</span>
+          <span className="text-breath font-semibold">{summary.deviceRepCount ?? '—'}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-muted text-sm">Avg form score</span>
@@ -47,19 +47,19 @@ export default function SessionSummary({ session, onDone }) {
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted text-sm">Avg heart rate</span>
-          <span className="text-heart font-semibold">{avgHr ?? '—'} bpm</span>
+          <span className="text-muted text-sm">Avg breath rate</span>
+          <span className="text-breath font-semibold">{avgBr ?? '—'} breaths/min</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted text-sm">Peak heart rate</span>
-          <span className="text-heart font-semibold">{peakHr ?? '—'} bpm</span>
+          <span className="text-muted text-sm">Peak breath rate</span>
+          <span className="text-breath font-semibold">{peakBr ?? '—'} breaths/min</span>
         </div>
       </div>
 
-      {heartReadings.length > 0 && (
+      {breathReadings.length > 0 && (
         <p className="text-sm text-muted mb-6 leading-relaxed">
-          Effort: heart rate climbed to <span className="text-heart font-semibold">{peakHr} bpm</span> during this
-          session — a strong effort signal alongside the rep count.
+          Effort: breath rate climbed to <span className="text-breath font-semibold">{peakBr} breaths/min</span>{' '}
+          during this session — a strong effort signal alongside the rep count.
         </p>
       )}
 

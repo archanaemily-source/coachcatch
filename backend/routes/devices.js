@@ -41,8 +41,8 @@ router.post('/biometrics', deviceAuthMiddleware, (req, res) => {
   if (sessionId && sessionId !== req.deviceSession.id) {
     return res.status(400).json({ error: 'sessionId does not match device token' });
   }
-  if (type !== 'heart_rate' || value === undefined || value === null) {
-    return res.status(400).json({ error: "type must be 'heart_rate' and value is required" });
+  if (type !== 'breath_rate' || value === undefined || value === null) {
+    return res.status(400).json({ error: "type must be 'breath_rate' and value is required" });
   }
 
   const readingId = crypto.randomUUID();

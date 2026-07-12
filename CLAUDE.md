@@ -1,6 +1,6 @@
 # CoachApp
 
-CoachApp is a sports coaching web app: a student performs squats in front of their phone camera, and MediaPipe pose detection running in the browser counts reps and scores form; a teammate's hardware sensor independently reports its own rep count and heart rate to the backend as a cross-check. The coach sees live sessions and post-workout reports. Pitch: "reps prove the motion, heart rate proves the effort, and camera + hardware agreeing proves the system."
+CoachApp is a sports coaching web app: a student performs squats in front of their phone camera, and MediaPipe pose detection running in the browser counts reps and scores form; a teammate's hardware sensor independently reports its own rep count and breath rate to the backend as a cross-check. The coach sees live sessions and post-workout reports. Pitch: "reps prove the motion, breath proves the effort, and camera + hardware agreeing proves the system."
 
 ## Makefile commands
 - `make dev` — run backend (port 3001) and frontend (Vite, port 5173) together
@@ -23,7 +23,7 @@ CoachApp is a sports coaching web app: a student performs squats in front of the
 - `goals(id, studentId, coachId, exerciseType default 'squat', targetReps int, active bool, createdAt)`
 - `sessions(id, studentId, goalId nullable, exerciseType, deviceToken nullable, startedAt, endedAt nullable, status 'in_progress'|'completed')`
 - `rep_events(id, sessionId, source 'camera'|'device'|'manual', repNumber int, timestamp, formScore float nullable)`
-- `biometric_readings(id, sessionId, type 'heart_rate', value TEXT encrypted, timestamp)`
+- `biometric_readings(id, sessionId, type 'breath_rate', value TEXT encrypted, timestamp)`
 
 ## API contract
 - `POST /api/auth/register {name,email,password,role}` -> `{token}`; `POST /api/auth/login` -> `{token}`. JWT payload `{id, role, name}`, 2-day expiry.
@@ -33,9 +33,9 @@ CoachApp is a sports coaching web app: a student performs squats in front of the
 - `POST /api/sessions` — student only -> `{sessionId, deviceToken}`. deviceToken = random 8-char hex, typed into hardware firmware by hand.
 - `POST /api/sessions/:id/reps {source:'camera'|'manual', repNumber, timestamp?, formScore?}` — session owner only; 409 if session completed.
 - `POST /api/sessions/:id/complete` -> `{summary}`. Sets status/endedAt, NULLs deviceToken (expires on completion).
-- `GET /api/sessions/:id` — owner or linked coach. Returns session + rep events + decrypted biometrics + cameraRepCount + deviceRepCount + latestHeartRate + summary if completed. Hides deviceToken from coaches. Polled every 4s during live sessions.
+- `GET /api/sessions/:id` — owner or linked coach. Returns session + rep events + decrypted biometrics + cameraRepCount + deviceRepCount + latestBreathRate + summary if completed. Hides deviceToken from coaches. Polled every 4s during live sessions.
 - `GET /api/students/:id/sessions` — owner or linked coach; includes summary per completed session.
-- `POST /api/devices/reps` and `POST /api/devices/biometrics` — NO JWT. Header `X-Device-Token` must match an `in_progress` session's token. Bodies: `{sessionId, repNumber, timestamp?}` and `{sessionId, type:'heart_rate', value, timestamp?}`. 401 on bad/expired token.
+- `POST /api/devices/reps` and `POST /api/devices/biometrics` — NO JWT. Header `X-Device-Token` must match an `in_progress` session's token. Bodies: `{sessionId, repNumber, timestamp?}` and `{sessionId, type:'breath_rate', value, timestamp?}`. 401 on bad/expired token.
 
 ## Summary computation
 - `totalReps` = count of `source='camera'` events; falls back to `manual` count if zero camera events.

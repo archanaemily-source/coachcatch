@@ -195,7 +195,7 @@ async function main() {
   await test('device biometric accepted and NOT stored as plaintext', async () => {
     const res = await api('POST', '/api/devices/biometrics', {
       deviceToken,
-      body: { sessionId, type: 'heart_rate', value: '137', timestamp: new Date().toISOString() },
+      body: { sessionId, type: 'breath_rate', value: '28', timestamp: new Date().toISOString() },
     });
     assert.strictEqual(res.status, 201);
 
@@ -203,16 +203,16 @@ async function main() {
       .prepare('SELECT value FROM biometric_readings WHERE sessionId = ? ORDER BY timestamp DESC LIMIT 1')
       .get(sessionId);
     assert.ok(row);
-    assert.notStrictEqual(row.value, '137');
+    assert.notStrictEqual(row.value, '28');
     // Stored value must be in the iv:authTag:ciphertext hex format, not bare
-    // plaintext (a raw substring search for "137" would be flaky here: it's
+    // plaintext (a raw substring search for "28" would be flaky here: it's
     // a valid hex digit sequence with a real chance of appearing by chance
     // inside ~130 random hex characters).
     assert.match(row.value, /^[0-9a-f]+:[0-9a-f]+:[0-9a-f]+$/i);
-    assert.strictEqual(decrypt(row.value), '137');
+    assert.strictEqual(decrypt(row.value), '28');
   });
 
-  await test('camera reps recorded and live GET returns cameraRepCount/deviceRepCount/latestHeartRate', async () => {
+  await test('camera reps recorded and live GET returns cameraRepCount/deviceRepCount/latestBreathRate', async () => {
     for (let i = 1; i <= 3; i++) {
       const res = await api('POST', `/api/sessions/${sessionId}/reps`, {
         token: studentToken,
@@ -224,7 +224,7 @@ async function main() {
     assert.strictEqual(res.status, 200);
     assert.strictEqual(res.body.cameraRepCount, 3);
     assert.strictEqual(res.body.deviceRepCount, 1);
-    assert.strictEqual(res.body.latestHeartRate, 137);
+    assert.strictEqual(res.body.latestBreathRate, 28);
     assert.ok(res.body.deviceToken, 'owner should still see deviceToken while in_progress');
   });
 

@@ -41,7 +41,7 @@ function createGoal(studentId, coachId, targetReps) {
 }
 
 function createCompletedSession(studentId, goalId, opts) {
-  const { startMinutesAgo, cameraReps, deviceReps, hrStart, hrEnd } = opts;
+  const { startMinutesAgo, cameraReps, deviceReps, breathStart, breathEnd } = opts;
   const sessionId = crypto.randomUUID();
   const startedAt = new Date(Date.now() - startMinutesAgo * 60000);
   const durationSec = 70 + cameraReps * 5;
@@ -68,13 +68,13 @@ function createCompletedSession(studentId, goalId, opts) {
     ).run(crypto.randomUUID(), sessionId, i, t.toISOString());
   }
 
-  const hrPoints = 6;
-  for (let i = 0; i < hrPoints; i++) {
-    const t = new Date(startedAt.getTime() + (i * durationSec * 1000) / (hrPoints - 1));
-    const hr = Math.round(hrStart + ((hrEnd - hrStart) * i) / (hrPoints - 1));
+  const breathPoints = 6;
+  for (let i = 0; i < breathPoints; i++) {
+    const t = new Date(startedAt.getTime() + (i * durationSec * 1000) / (breathPoints - 1));
+    const breathRate = Math.round(breathStart + ((breathEnd - breathStart) * i) / (breathPoints - 1));
     db.prepare(
-      "INSERT INTO biometric_readings (id, sessionId, type, value, timestamp) VALUES (?, ?, 'heart_rate', ?, ?)"
-    ).run(crypto.randomUUID(), sessionId, encrypt(hr), t.toISOString());
+      "INSERT INTO biometric_readings (id, sessionId, type, value, timestamp) VALUES (?, ?, 'breath_rate', ?, ?)"
+    ).run(crypto.randomUUID(), sessionId, encrypt(breathRate), t.toISOString());
   }
 
   return sessionId;
@@ -98,22 +98,22 @@ function main() {
     startMinutesAgo: 60 * 24 * 3,
     cameraReps: 18,
     deviceReps: 17,
-    hrStart: 88,
-    hrEnd: 142,
+    breathStart: 15,
+    breathEnd: 29,
   });
   createCompletedSession(jordanId, jordanGoal, {
     startMinutesAgo: 60 * 24 * 1,
     cameraReps: 22,
     deviceReps: 20,
-    hrStart: 91,
-    hrEnd: 151,
+    breathStart: 16,
+    breathEnd: 32,
   });
   createCompletedSession(samId, samGoal, {
     startMinutesAgo: 60 * 24 * 2,
     cameraReps: 13,
     deviceReps: 15,
-    hrStart: 85,
-    hrEnd: 133,
+    breathStart: 14,
+    breathEnd: 26,
   });
 
   console.log('Seed complete.');

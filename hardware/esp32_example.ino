@@ -1,5 +1,5 @@
 /*
- * CoachApp ESP32 example — WiFi connect + POST a rep and a heart-rate
+ * CoachApp ESP32 example — WiFi connect + POST a rep and a breath-rate
  * reading to the backend, using the X-Device-Token header.
  *
  * This is a cross-check, not the source of truth: the phone camera is
@@ -9,7 +9,7 @@
  * DEVICE_TOKEN is the 8-char "Sensor code" shown on the student's phone
  * when they start a session.
  *
- * Wire up your actual rep-detection / heart-rate sensor logic where
+ * Wire up your actual rep-detection / breath-analyzer sensor logic where
  * marked below (TODO) — this skeleton only shows the network calls.
  */
 #include <WiFi.h>
@@ -32,7 +32,7 @@ void setup() {
   Serial.println("\nWiFi connected");
 
   // TODO: initialize your rep-detection sensor (accelerometer, button,
-  // limit switch, etc.) and heart-rate sensor here.
+  // limit switch, etc.) and breath-analyzer sensor here.
 }
 
 void postRep(int repNumber) {
@@ -46,14 +46,14 @@ void postRep(int repNumber) {
   http.end();
 }
 
-void postHeartRate(int bpm) {
+void postBreathRate(int breathsPerMin) {
   HTTPClient http;
   http.begin(String(SERVER_HOST) + "/api/devices/biometrics");
   http.addHeader("Content-Type", "application/json");
   http.addHeader("X-Device-Token", DEVICE_TOKEN);
-  String body = "{\"type\":\"heart_rate\",\"value\":\"" + String(bpm) + "\"}";
+  String body = "{\"type\":\"breath_rate\",\"value\":\"" + String(breathsPerMin) + "\"}";
   int status = http.POST(body);
-  Serial.printf("HR %d -> %d\n", bpm, status);
+  Serial.printf("BR %d -> %d\n", breathsPerMin, status);
   http.end();
 }
 
@@ -63,9 +63,9 @@ void loop() {
   //   repCount++;
   //   postRep(repCount);
 
-  // TODO: replace with your real heart-rate sensor read. Report every
-  // few seconds, not on every loop iteration:
-  //   postHeartRate(currentBpm);
+  // TODO: replace with your real breath-analyzer sensor read. Report
+  // every few seconds, not on every loop iteration:
+  //   postBreathRate(currentBreathsPerMin);
 
   delay(1000);
 }

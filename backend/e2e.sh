@@ -60,11 +60,11 @@ for i in 1 2; do
 done
 pass "posted 2 device reps"
 
-for hr in 95 110 128; do
+for br in 16 22 28; do
   RES=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/devices/biometrics" \
     -H "X-Device-Token: $DEVICE_TOKEN" -H 'Content-Type: application/json' \
-    -d "{\"sessionId\":\"$SESSION_ID\",\"type\":\"heart_rate\",\"value\":\"$hr\"}")
-  if [ "$RES" != "201" ]; then fail "post biometric hr=$hr (got $RES)"; fi
+    -d "{\"sessionId\":\"$SESSION_ID\",\"type\":\"breath_rate\",\"value\":\"$br\"}")
+  if [ "$RES" != "201" ]; then fail "post biometric br=$br (got $RES)"; fi
 done
 pass "posted 3 biometric readings"
 
@@ -78,8 +78,8 @@ if [ "$DEVICE_REP_COUNT" = "2" ]; then pass "summary.deviceRepCount == 2 (cross-
 if [ "$AVG_FORM" = "0.9" ]; then pass "summary.avgFormScore == 0.9"; else fail "summary.avgFormScore expected 0.9, got $AVG_FORM"; fi
 
 GET_SESSION=$(curl -s "$BASE_URL/api/sessions/$SESSION_ID" -H "Authorization: Bearer $TOKEN")
-LATEST_HR=$(json_get "$GET_SESSION" latestHeartRate)
-if [ "$LATEST_HR" = "128" ]; then pass "latestHeartRate == 128"; else fail "latestHeartRate expected 128, got $LATEST_HR"; fi
+LATEST_BR=$(json_get "$GET_SESSION" latestBreathRate)
+if [ "$LATEST_BR" = "28" ]; then pass "latestBreathRate == 28"; else fail "latestBreathRate expected 28, got $LATEST_BR"; fi
 
 DEVICE_REP_AFTER=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/api/devices/reps" \
   -H "X-Device-Token: $DEVICE_TOKEN" -H 'Content-Type: application/json' \

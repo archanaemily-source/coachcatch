@@ -46,7 +46,7 @@ export default function LiveSession() {
   const [phase, setPhase] = useState('up');
   const [showGoDeeper, setShowGoDeeper] = useState(false);
   const [repPop, setRepPop] = useState(false);
-  const [latestHeartRate, setLatestHeartRate] = useState(null);
+  const [latestBreathRate, setLatestBreathRate] = useState(null);
   const [deviceRepCount, setDeviceRepCount] = useState(null);
   const [summarySession, setSummarySession] = useState(null);
   const [manualOpen, setManualOpen] = useState(false);
@@ -54,7 +54,7 @@ export default function LiveSession() {
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState('');
 
-  // Load the session (for deviceToken) and poll for HR / device rep cross-check.
+  // Load the session (for deviceToken) and poll for breath rate / device rep cross-check.
   useEffect(() => {
     let cancelled = false;
     let timer = null;
@@ -65,7 +65,7 @@ export default function LiveSession() {
         .then((data) => {
           if (cancelled) return;
           setDeviceToken(data.deviceToken ?? null);
-          setLatestHeartRate(data.latestHeartRate);
+          setLatestBreathRate(data.latestBreathRate);
           setDeviceRepCount(data.deviceRepCount);
           if (data.status === 'in_progress') {
             timer = setTimeout(poll, POLL_MS);
@@ -311,8 +311,8 @@ export default function LiveSession() {
 
       <div className="flex items-center gap-6 text-sm mb-6">
         <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-heart inline-block" />
-          <span className="text-heart font-semibold">{latestHeartRate ?? '—'} bpm</span>
+          <span className="h-2 w-2 rounded-full bg-breath inline-block" />
+          <span className="text-breath font-semibold">{latestBreathRate ?? '—'} breaths/min</span>
         </div>
         <div className="text-muted">
           Device: <span className="text-text font-semibold">{deviceRepCount ?? '—'}</span>

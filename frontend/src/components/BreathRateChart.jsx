@@ -6,7 +6,7 @@ const LABEL_COLOR = '#9BA1A8';
 const PADDING = { top: 16, right: 16, bottom: 24, left: 36 };
 
 // Hand-rolled canvas line chart — no chart library, per spec.
-export default function HeartRateChart({ readings }) {
+export default function BreathRateChart({ readings }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -30,7 +30,7 @@ export default function HeartRateChart({ readings }) {
     if (!readings || readings.length === 0) {
       ctx.fillStyle = LABEL_COLOR;
       ctx.font = '13px Inter, sans-serif';
-      ctx.fillText('No heart rate data yet', PADDING.left, height / 2);
+      ctx.fillText('No breath rate data yet', PADDING.left, height / 2);
       return;
     }
 

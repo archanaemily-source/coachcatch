@@ -1,8 +1,8 @@
 # CoachApp hardware handoff
 
 Your sensor reports two things to the backend during a live session: rep
-counts and heart rate. Both are a **cross-check, not the source of truth** —
-the phone camera is canonical for the rep count shown to the coach. Your
+counts and breath rate. Both are a **cross-check, not the source of truth**
+— the phone camera is canonical for the rep count shown to the coach. Your
 numbers just need to be roughly right; nobody reconciles them against the
 camera's count.
 
@@ -41,14 +41,14 @@ curl -X POST http://localhost:3001/api/devices/reps \
 device or in your bridge script — it doesn't need to match the camera's
 count).
 
-## Endpoint 2 — report a heart-rate reading
+## Endpoint 2 — report a breath-rate reading
 
 ```
 POST /api/devices/biometrics
 X-Device-Token: <the Sensor code>
 Content-Type: application/json
 
-{"type": "heart_rate", "value": "132"}
+{"type": "breath_rate", "value": "18"}
 ```
 
 Example:
@@ -57,10 +57,12 @@ Example:
 curl -X POST http://localhost:3001/api/devices/biometrics \
   -H "X-Device-Token: 53f9dd55" \
   -H "Content-Type: application/json" \
-  -d '{"type": "heart_rate", "value": "132"}'
+  -d '{"type": "breath_rate", "value": "18"}'
 ```
 
-Send a reading every few seconds — no need to stream continuously.
+`value` is breaths per minute (resting is roughly 12-16; expect it to climb
+into the 25-35 range during a squat set). Send a reading every few
+seconds — no need to stream continuously.
 
 ## Responses
 
@@ -76,12 +78,12 @@ Send a reading every few seconds — no need to stream continuously.
 1. **`esp32_example.ino`** — if your sensor is on an ESP32 (or similar)
    with WiFi, this connects to WiFi and POSTs directly. Fill in your
    WiFi credentials, the laptop's LAN IP running `make dev`, and the
-   Sensor code, then wire in your actual rep/heart-rate detection logic
-   where marked.
+   Sensor code, then wire in your actual rep/breath-analyzer detection
+   logic where marked.
 
 2. **`bridge.py`** — your no-WiFi insurance policy. If the ESP32's WiFi
    is being flaky mid-demo, plug it into a laptop over USB, have it print
-   plain lines (`REP` or `HR:132`) to Serial instead of doing HTTP itself,
+   plain lines (`REP` or `BR:18`) to Serial instead of doing HTTP itself,
    and run this script to forward those lines to the backend over the
    laptop's network connection. See the script's header comment for exact
    usage, including a `--dry-run` mode that reads from stdin instead of a

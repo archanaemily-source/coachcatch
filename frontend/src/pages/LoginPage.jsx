@@ -36,7 +36,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <h1 className="font-display text-5xl font-extrabold text-center mb-1 text-rep">CoachApp</h1>
-        <p className="text-center text-muted mb-8 text-sm">reps prove the motion, heart rate proves the effort</p>
+        <p className="text-center text-muted mb-8 text-sm">reps prove the motion, breath proves the effort</p>
 
         <div className="bg-panel border border-border rounded-xl p-6">
           <div className="flex mb-6 rounded-lg overflow-hidden border border-border">
