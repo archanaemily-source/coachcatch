@@ -7,8 +7,10 @@ const db = require('../db');
 const { encrypt } = require('../crypto');
 const crypto = require('crypto');
 
-const FIREBASE_URL =
-  process.env.FIREBASE_BREATH_URL || 'https://breathtets-default-rtdb.firebaseio.com/breath_data.json';
+// No hardcoded default on purpose — this points at a specific teammate's
+// Firebase project. Set FIREBASE_BREATH_URL in backend/.env (gitignored) to
+// enable polling; without it, startFirebaseBreathPolling() is a no-op.
+const FIREBASE_URL = process.env.FIREBASE_BREATH_URL;
 const POLL_MS = 4000;
 
 // Only ingest readings that arrive after the poller starts — the feed is a
@@ -53,6 +55,10 @@ async function pollFirebaseBreathData() {
 }
 
 function startFirebaseBreathPolling() {
+  if (!FIREBASE_URL) {
+    console.log('[firebase-breath] FIREBASE_BREATH_URL not set — polling disabled');
+    return null;
+  }
   pollFirebaseBreathData();
   return setInterval(pollFirebaseBreathData, POLL_MS);
 }

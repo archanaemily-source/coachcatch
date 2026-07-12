@@ -7,6 +7,6 @@ app.listen(PORT, () => {
 });
 
 if (!process.env.DISABLE_FIREBASE_POLL) {
-  startFirebaseBreathPolling();
-  console.log('Polling Firebase breath analyzer feed every 4s...');
+  const started = startFirebaseBreathPolling();
+  if (started) console.log('Polling Firebase breath analyzer feed every 4s...');
 }
