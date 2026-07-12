@@ -56,10 +56,19 @@ The dev server binds to all interfaces (`host: true`), so a phone on the
 same WiFi can already reach `http://<your-laptop-ip>:5173`. But
 `getUserMedia` (camera access) is blocked by browsers over plain HTTP on
 anything other than `localhost`, so for the live camera screen on a real
-phone you need HTTPS:
+phone you need HTTPS.
+
+The ngrok binary is already bundled at `.tools/ngrok/ngrok` (gitignored,
+not a system install). One-time setup:
+
+1. Sign up free at [dashboard.ngrok.com/signup](https://dashboard.ngrok.com/signup).
+2. Grab your authtoken from [dashboard.ngrok.com/get-started/your-authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
+3. `.tools/ngrok/ngrok config add-authtoken <your-token>`
+
+Then, with `make dev` running in another terminal:
 
 ```bash
-ngrok http 5173
+make ngrok
 ```
 
 Open the `https://*.ngrok-free.app` URL it gives you on the phone. The

@@ -2,16 +2,17 @@ SHELL := /bin/bash
 ROOT_DIR := $(shell pwd)
 export PATH := $(ROOT_DIR)/.tools/node/bin:$(PATH)
 
-.PHONY: help dev seed test build install e2e
+.PHONY: help dev seed test build install e2e ngrok
 
 help:
-	@echo "CoachApp make targets:"
+	@echo "CoachCatch make targets:"
 	@echo "  make install  - install backend + frontend dependencies"
 	@echo "  make dev      - run backend (3001) and frontend (5173) together"
 	@echo "  make seed     - wipe the DB and load demo coach/students/sessions"
 	@echo "  make test     - run backend endpoint tests + rep-engine unit tests"
 	@echo "  make build    - production build of the frontend, sanity-check backend"
 	@echo "  make e2e      - re-seed, then run the curl end-to-end workout script"
+	@echo "  make ngrok    - tunnel the frontend over HTTPS for phone camera testing"
 
 install:
 	cd backend && npm install
@@ -36,6 +37,10 @@ test:
 build:
 	@if [ -f frontend/package.json ]; then cd frontend && npm run build; else echo "(frontend not scaffolded yet, skipping frontend build)"; fi
 	cd backend && node -c server.js
+
+ngrok:
+	@if [ ! -x .tools/ngrok/ngrok ]; then echo "ngrok binary not found in .tools/ngrok/ - see README"; exit 1; fi
+	.tools/ngrok/ngrok http 5173
 
 e2e: seed
 	@cd backend && (DISABLE_FIREBASE_POLL=1 BACKEND_PORT=3001 node server.js > /tmp/coachapp-e2e-backend.log 2>&1 & echo $$! > /tmp/coachapp-e2e-backend.pid)
