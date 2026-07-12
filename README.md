@@ -1,4 +1,4 @@
-# CoachApp
+# CoachCatch
 
 A student does squats in front of their phone camera; MediaPipe pose
 detection counts reps and scores form right in the browser. A teammate's
@@ -68,7 +68,7 @@ you don't need to tunnel the backend separately.
 
 ## 90-second demo script
 
-1. **(10s)** "CoachApp cross-checks a phone camera against hardware —
+1. **(10s)** "CoachCatch cross-checks a phone camera against hardware —
    reps prove the motion, breath proves the effort."
 2. **(20s)** Student taps Start session, sensor code appears — "that code
    is what the hardware teammate's sensor pairs with, no login needed."

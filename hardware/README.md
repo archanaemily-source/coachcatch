@@ -1,4 +1,4 @@
-# CoachApp hardware handoff
+# CoachCatch hardware handoff
 
 Your sensor reports two things to the backend during a live session: rep
 counts and breath rate. Both are a **cross-check, not the source of truth**

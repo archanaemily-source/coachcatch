@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serial-to-HTTP bridge for CoachApp's device endpoints.
+"""Serial-to-HTTP bridge for CoachCatch's device endpoints.
 
 Reads lines from a serial port (or stdin in --dry-run mode) and forwards
 them to the backend: a "REP" line counts one rep, a "BR:<breaths/min>"

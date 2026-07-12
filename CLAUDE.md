@@ -1,6 +1,6 @@
-# CoachApp
+# CoachCatch
 
-CoachApp is a sports coaching web app: a student performs squats in front of their phone camera, and MediaPipe pose detection running in the browser counts reps and scores form; a teammate's hardware sensor independently reports its own rep count and breath rate to the backend as a cross-check. The coach sees live sessions and post-workout reports. Pitch: "reps prove the motion, breath proves the effort, and camera + hardware agreeing proves the system."
+CoachCatch is a sports coaching web app: a student performs squats in front of their phone camera, and MediaPipe pose detection running in the browser counts reps and scores form; a teammate's hardware sensor independently reports its own rep count and breath rate to the backend as a cross-check. The coach sees live sessions and post-workout reports. Pitch: "reps prove the motion, breath proves the effort, and camera + hardware agreeing proves the system."
 
 ## Makefile commands
 - `make dev` — run backend (port 3001) and frontend (Vite, port 5173) together

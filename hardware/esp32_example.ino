@@ -1,5 +1,5 @@
 /*
- * CoachApp ESP32 example — WiFi connect + POST a rep and a breath-rate
+ * CoachCatch ESP32 example — WiFi connect + POST a rep and a breath-rate
  * reading to the backend, using the X-Device-Token header.
  *
  * This is a cross-check, not the source of truth: the phone camera is
